@@ -6,6 +6,9 @@ import { createRequire } from 'module';
 // For CommonJS compatibility
 const require = createRequire(import.meta.url);
 
+// Initialize the Express app
+const app = express();
+
 // Setup Hocuspocus Server
 const server = Server.configure({
   name: 'Collaboration Server',
@@ -24,17 +27,16 @@ const server = Server.configure({
   ],
 });
 
-// Start Hocuspocus
-server.listen();
-
-// Express app to check if server is running
-const app = express();
-const port = process.env.PORT || 8080;
-
+// Use Express to serve a basic route
 app.get('/', (req, res) => {
   res.send('Hocuspocus WebSocket Server is running.');
 });
 
-app.listen(port, () => {
-  console.log(`Express server listening on port ${port}`);
+// Start both the Hocuspocus server and the Express app
+server.listen().then(() => {
+  app.listen(process.env.PORT || 8080, () => {
+    console.log(
+      `Express and WebSocket server running on port ${process.env.PORT || 8080}`
+    );
+  });
 });
