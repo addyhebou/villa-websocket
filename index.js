@@ -1,30 +1,33 @@
 import { Server } from '@hocuspocus/server';
 import { SQLite } from '@hocuspocus/extension-sqlite';
+import express from 'express';
+import cors from 'cors';
+import { WebSocketServer } from 'ws';
 
-/**
- * Configures and initializes the server.
- *
- * @type {Object}
- * @property {string} name - The name of the server.
- * @property {number} port - The port number on which the server listens.
- * @property {number} timeout - The timeout duration in milliseconds.
- * @property {function} onConnect - Callback function invoked when a client connects.
- * @property {Object[]} extensions - Array of extensions to be used by the server.
- * @property {SQLite} extensions[].SQLite - SQLite extension configuration.
- * @property {string} extensions[].SQLite.database - The name of the SQLite database file.
- *
- * @see {@link https://tiptap.dev/docs/hocuspocus/server/configuration | Hocuspocus Server Configuration Documentation}
- */
-const server = Server.configure({
+const PORT = process.env.PORT || 8080;
+const app = express();
+
+// Enable CORS to allow frontend connections from different domains
+app.use(cors());
+
+app.get('/', (req, res) => {
+  res.send('Hocuspocus WebSocket Server is running');
+});
+
+// Create an Express HTTP server
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Attach WebSocket server to Express
+const websocketServer = new WebSocketServer({ server });
+
+const hocuspocus = Server.configure({
   name: 'Collaboration server',
-  port: 8080,
   timeout: 3000,
 
-  /**
-   * This method is called when a client connects to the server.
-   */
   async onConnect() {
-    console.log('Client connected');
+    console.log('Client connected to Hocuspocus');
   },
 
   extensions: [
@@ -34,4 +37,5 @@ const server = Server.configure({
   ],
 });
 
-server.listen();
+// Start Hocuspocus on the same server
+hocuspocus.listen(websocketServer);
