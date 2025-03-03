@@ -13,6 +13,7 @@
     "@hocuspocus/extension-sqlite": "^2.15.2",
     "@hocuspocus/server": "^2.15.2",
     "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },
   "type": "module"
